@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14-alpine
+    restart: always 
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  cache:
+    image: redis:6-alpine 
+    restart: always
+    container_name: redis_cache
+
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    restart: always 
+    container_name: web_app_container
+    env_file: .env
+    depends_on:
+      - db
+      - cache # Добавляем зависимость от Redis
+
+volumes:
+  postgres_data:
